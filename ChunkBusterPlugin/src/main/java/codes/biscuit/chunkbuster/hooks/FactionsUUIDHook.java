@@ -31,6 +31,6 @@ class FactionsUUIDHook {
     boolean compareLocPlayerFaction(Location loc, Player p) {
         Faction locFaction = Board.getInstance().getFactionAt(new FLocation(loc));
         Faction pFaction = FPlayers.getInstance().getByPlayer(p).getFaction();
-        return locFaction.equals(pFaction) || (locFaction.isWilderness() && main.getConfigValues().canPlaceInWilderness());
+        return locFaction.getId().equals(pFaction.getId()) || (locFaction.isWilderness() && main.getConfigValues().canPlaceInWilderness());
     }
 }

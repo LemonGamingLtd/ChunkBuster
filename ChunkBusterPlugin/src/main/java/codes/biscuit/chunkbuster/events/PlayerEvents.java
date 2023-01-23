@@ -1,12 +1,15 @@
 package codes.biscuit.chunkbuster.events;
 
 import codes.biscuit.chunkbuster.ChunkBuster;
-import codes.biscuit.chunkbuster.nbt.NBTItem;
 import codes.biscuit.chunkbuster.timers.MessageTimer;
 import codes.biscuit.chunkbuster.timers.SoundTimer;
 import codes.biscuit.chunkbuster.utils.ConfigValues;
 import codes.biscuit.chunkbuster.utils.Utils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,9 +22,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static codes.biscuit.chunkbuster.ChunkBuster.CHUNKBUSTER_RADIUS_KEY;
 
 public class PlayerEvents implements Listener {
 
@@ -36,8 +43,9 @@ public class PlayerEvents implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onChunkBusterPlace(BlockPlaceEvent e) {
-        NBTItem nbtItem = new NBTItem(e.getItemInHand());
-        if (e.getItemInHand().getType().equals(main.getConfigValues().getChunkBusterMaterial()) && nbtItem.hasKey("chunkbuster.radius")) {
+        ItemStack item = e.getItemInHand();
+        PersistentDataContainer dataContainer = item.getItemMeta().getPersistentDataContainer();
+        if (e.getItemInHand().getType().equals(main.getConfigValues().getChunkBusterMaterial()) && dataContainer.has(CHUNKBUSTER_RADIUS_KEY)) {
             e.setCancelled(true);
             Player p = e.getPlayer();
             if (p.hasPermission("chunkbuster.use")) {
@@ -125,8 +133,9 @@ public class PlayerEvents implements Listener {
                         if (main.getHookUtils().compareLocToPlayer(chunkBusterLocation, p) || main.getHookUtils().isWilderness(chunkBusterLocation)) {
                             if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().getDisplayName().contains(main.getConfigValues().getConfirmName())) {
                                 int itemSlot = -1;
-                                NBTItem nbtItem = new NBTItem(p.getItemInHand());
-                                if (p.getItemInHand() != null && (p.getItemInHand().getType().equals(main.getConfigValues().getChunkBusterMaterial()) && nbtItem.hasKey("chunkbuster.radius"))) {
+                                ItemStack item = p.getInventory().getItemInMainHand();
+                                PersistentDataContainer dataContainer = item.getItemMeta().getPersistentDataContainer();
+                                if (item.getType().equals(main.getConfigValues().getChunkBusterMaterial()) && dataContainer.has(CHUNKBUSTER_RADIUS_KEY)) {
                                     itemSlot = p.getInventory().getHeldItemSlot();
                                 } else {
                                     for (int i = 0; i <= 40; i++) { // 40 should fix the offhand issue.
@@ -136,8 +145,11 @@ public class PlayerEvents implements Listener {
                                         } catch (IndexOutOfBoundsException ex) {
                                             continue;
                                         }
-                                        nbtItem = new NBTItem(currentItem);
-                                        if (currentItem != null && currentItem.getType().equals(main.getConfigValues().getChunkBusterMaterial()) && nbtItem.hasKey("chunkbuster.radius")) {
+                                        if (currentItem == null) {
+                                            continue;
+                                        }
+                                        dataContainer = currentItem.getItemMeta().getPersistentDataContainer();
+                                        if (currentItem.getType().equals(main.getConfigValues().getChunkBusterMaterial()) && dataContainer.has(CHUNKBUSTER_RADIUS_KEY)) {
                                             itemSlot = i;
                                             break;
                                         }
@@ -153,8 +165,11 @@ public class PlayerEvents implements Listener {
                                     }
                                 }
                                 ItemStack checkItem = p.getInventory().getItem(itemSlot);
-                                nbtItem = new NBTItem(checkItem);
-                                int chunkBusterDiameter = nbtItem.getInteger("chunkbuster.radius");
+                                if (checkItem == null) {
+                                    return;
+                                }
+                                dataContainer = checkItem.getItemMeta().getPersistentDataContainer();
+                                int chunkBusterDiameter = dataContainer.get(CHUNKBUSTER_RADIUS_KEY, PersistentDataType.INTEGER);
                                 playerCooldowns.put(p, System.currentTimeMillis() + (1000 * main.getConfigValues().getCooldown()));
                                 chunkBusterLocations.remove(p);
                                 p.closeInventory();

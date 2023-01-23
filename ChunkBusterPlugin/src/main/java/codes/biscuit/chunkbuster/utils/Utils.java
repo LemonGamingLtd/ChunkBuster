@@ -1,7 +1,6 @@
 package codes.biscuit.chunkbuster.utils;
 
 import codes.biscuit.chunkbuster.ChunkBuster;
-import codes.biscuit.chunkbuster.nbt.NBTItem;
 import codes.biscuit.chunkbuster.timers.RemovalQueue;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -9,6 +8,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.BufferedReader;
@@ -25,6 +26,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 import java.util.regex.Pattern;
+
+import static codes.biscuit.chunkbuster.ChunkBuster.CHUNKBUSTER_RADIUS_KEY;
 
 public class Utils {
 
@@ -59,13 +62,13 @@ public class Utils {
         } catch (IllegalArgumentException ex) {
             material = Material.DIRT;
         }
-        short damage = 0;
-        if (rawSplit.length > 1) {
-            try {
-                damage = Short.valueOf(rawSplit[1]);
-            } catch (IllegalArgumentException ignored) {}
-        }
-        return new ItemStack(material, 1, damage);
+//        short damage = 0;
+//        if (rawSplit.length > 1) {
+//            try {
+//                damage = Short.valueOf(rawSplit[1]);
+//            } catch (IllegalArgumentException ignored) {}
+//        }
+        return new ItemStack(material);
     }
 
     public void sendMessage(CommandSender p, ConfigValues.Message message, Object... params) {
@@ -85,21 +88,22 @@ public class Utils {
         Set<Material> ignoredBlocks = main.getConfigValues().getIgnoredBlocks();
         if (chunkBusterArea % 2 != 0) {
             RemovalQueue removalQueue = new RemovalQueue(main, p);
-            WorldBorder border = chunkBusterLocation.getWorld().getWorldBorder();
+            World world = chunkBusterLocation.getWorld();
+            WorldBorder border = world.getWorldBorder();
             // Variables for the area to loop through
             int upperBound = ((chunkBusterArea-1)/2)+1;
             int lowerBound = (chunkBusterArea-1)/-2;
-            for (int y = main.getConfigValues().getMaximumY(p); y >= main.getConfigValues().getMinimumY(p); y--) {
-                for (int chunkX = lowerBound; chunkX < upperBound; chunkX++) { // Loop through the area
-                    for (int chunkZ = lowerBound; chunkZ < upperBound; chunkZ++) { // Get the chunk
-                        Chunk chunk = chunkBusterLocation.getWorld().getChunkAt(chunkBusterLocation.getChunk().getX() + chunkX, chunkBusterLocation.getChunk().getZ() + chunkZ);
+            for (int y = world.getMinHeight(); y <= world.getMaxHeight(); y++) {
+                for (int chunkX = lowerBound; chunkX <= upperBound; chunkX++) { // Loop through the area
+                    for (int chunkZ = lowerBound; chunkZ <= upperBound; chunkZ++) { // Get the chunk
+                        Chunk chunk = world.getChunkAt(chunkBusterLocation.getChunk().getX() + chunkX, chunkBusterLocation.getChunk().getZ() + chunkZ);
                         Location chunkCheckLoc = chunk.getBlock(7, 60, 7).getLocation(); // Check the chunk
                         if (main.getHookUtils().compareLocToPlayer(chunkCheckLoc, p)) {
                             waterChunks.add(chunk);
                             for (int x = 0; x < 16; x++) { // Clear the chunk
                                 for (int z = 0; z < 16; z++) {
                                     Block b = chunk.getBlock(x, y, z);
-                                    if (!b.getType().equals(Material.AIR) && !ignoredBlocks.contains(b.getType())) {
+                                    if (b.getType() != Material.AIR && !ignoredBlocks.contains(b.getType())) {
                                         if (!main.getConfigValues().worldborderHookEnabled() || insideBorder(b, border)) {
                                             removalQueue.getBlocks().add(b);
                                         }
@@ -118,12 +122,7 @@ public class Utils {
     }
 
     private boolean insideBorder(Block block, WorldBorder border) {
-        Location blockLocation = block.getLocation().add(0.5, 0, 0.5);
-        double x = blockLocation.getX();
-        double z = blockLocation.getZ();
-        double size = border.getSize()/2;
-        Location center = border.getCenter();
-        return !((x >= center.clone().add(size, 0, 0).getX() || z >= center.clone().add(0, 0, size).getZ()) || (x <= center.clone().subtract(size,0,0).getX() || (z <= center.clone().subtract(0,0, size).getZ())));
+        return border.isInside(block.getLocation());
     }
 
     public void updateConfig(ChunkBuster main) { // Basic config updater that saves the old config, loads the new one, and inserts the old keys
@@ -191,7 +190,7 @@ public class Utils {
     public Set<Chunk> getWaterChunks() { return waterChunks; }
 
     public ItemStack getChunkBusterItem(int giveAmount, int chunkArea) {
-        ItemStack item = new ItemStack(main.getConfigValues().getChunkBusterMaterial(), giveAmount, main.getConfigValues().getChunkBusterDamage());
+        ItemStack item = new ItemStack(main.getConfigValues().getChunkBusterMaterial(), giveAmount);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(main.getConfigValues().getChunkBusterName());
         itemMeta.setLore(main.getConfigValues().getChunkBusterLore(chunkArea));
@@ -199,8 +198,8 @@ public class Utils {
         if (main.getConfigValues().itemShouldGlow()) {
             addGlow(item);
         }
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setInteger("chunkbuster.radius", chunkArea);
-        return nbtItem.getItem();
+
+        item.editMeta(meta -> meta.getPersistentDataContainer().set(CHUNKBUSTER_RADIUS_KEY, PersistentDataType.INTEGER, chunkArea));
+        return item;
     }
 }

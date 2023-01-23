@@ -9,21 +9,37 @@
     <packaging>pom</packaging>
     <version>parent</version>
     <modules>
-        <module>WG_6</module>
         <module>WG_7</module>
         <module>ChunkBusterPlugin</module>
         <module>Abstraction</module>
     </modules>
     <name>ChunkBusterParent</name>
 
+    <properties>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+    </properties>
+
     <repositories>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
+        <repository>
+            <id>ender-repo</id>
+            <url>https://ci.ender.zone/plugin/repository/everything/</url>
+        </repository>
+        <repository>
+            <id>playpro-repo</id>
+            <url>https://maven.playpro.com</url>
+        </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>sk89q-repo</id>
-            <url>http://maven.sk89q.com/repo/</url>
         </repository>
     </repositories>
 </project>

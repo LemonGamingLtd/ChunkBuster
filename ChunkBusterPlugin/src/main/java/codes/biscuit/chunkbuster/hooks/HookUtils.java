@@ -22,32 +22,34 @@ public class HookUtils {
     public HookUtils(ChunkBuster main) {
         this.main = main;
         PluginManager pm = main.getServer().getPluginManager();
-        if (pm.getPlugin("MassiveCore") != null &&
-                pm.getPlugin("Factions") != null && // Many people have Massivecore on their server when they don't need it, so check dependencies.
-                pm.getPlugin("Factions").getDescription().getDepend().contains("MassiveCore")) {
-            main.getLogger().info("Hooked into MassiveCore Factions");
-            enabledHooks.put(HookType.MCOREFACTIONS, new MCoreFactionsHook(main));
-        } else if (pm.getPlugin("Factions") != null) {
+//        if (pm.getPlugin("MassiveCore") != null &&
+//                pm.getPlugin("Factions") != null && // Many people have Massivecore on their server when they don't need it, so check dependencies.
+//                pm.getPlugin("Factions").getDescription().getDepend().contains("MassiveCore")) {
+//            main.getLogger().info("Hooked into MassiveCore Factions");
+//            enabledHooks.put(HookType.MCOREFACTIONS, new MCoreFactionsHook(main));
+//        } else
+        if (pm.getPlugin("Factions") != null) {
             main.getLogger().info("Hooked into FactionsUUID/SavageFactions");
             enabledHooks.put(HookType.FACTIONSUUID, new FactionsUUIDHook(main));
-            try {
-                Class.forName("com.massivecraft.factions.perms.Role"); //old is com.massivecraft.factions.struct.Role
-                main.getLogger().info("Hooked into the new FactionsUUID/SavageFactions role system.");
-                enabledHooks.put(HookType.FACTIONSUUID_ROLE, new FactionsUUID_New());
-            } catch (ClassNotFoundException e) {
-                main.getLogger().info("Hooked into the old FactionsUUID/SavageFactions role system.");
-                enabledHooks.put(HookType.FACTIONSUUID_ROLE, new FactionsUUID_Old());
-            }
+//            try {
+//                Class.forName("com.massivecraft.factions.perms.Role"); //old is com.massivecraft.factions.struct.Role
+//                main.getLogger().info("Hooked into the new FactionsUUID/SavageFactions role system.");
+//                enabledHooks.put(HookType.FACTIONSUUID_ROLE, new FactionsUUID_New());
+//            } catch (ClassNotFoundException e) {
+//                main.getLogger().info("Hooked into the old FactionsUUID/SavageFactions role system.");
+//                enabledHooks.put(HookType.FACTIONSUUID_ROLE, new FactionsUUID_Old());
+//            }
         }
         if (pm.getPlugin("WorldGuard") != null) {
             String pluginVersion = main.getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion();
             if (pluginVersion.startsWith("7") && pm.getPlugin("WorldEdit") != null) {
                 enabledHooks.put(HookType.WORLDGUARD, new WorldGuard_7());
                 main.getLogger().info("Hooked into WorldGuard 7");
-            } else if (pluginVersion.startsWith("6")) {
-                enabledHooks.put(HookType.WORLDGUARD, new WorldGuard_6());
-                main.getLogger().info("Hooked into WorldGuard 6");
             }
+//            else if (pluginVersion.startsWith("6")) {
+//                enabledHooks.put(HookType.WORLDGUARD, new WorldGuard_6());
+//                main.getLogger().info("Hooked into WorldGuard 6");
+//            }
         }
         if (pm.getPlugin("Towny") != null) {
             main.getLogger().info("Hooked into Towny");
@@ -63,10 +65,11 @@ public class HookUtils {
      * Check if a player has a faction if the factions hook is enabled
      */
     public boolean hasFaction(Player p) {
-        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.MCOREFACTIONS)) {
-            MCoreFactionsHook mCoreFactionsHook = (MCoreFactionsHook)enabledHooks.get(HookType.MCOREFACTIONS);
-            return mCoreFactionsHook.hasFaction(p);
-        } else if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
+//        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.MCOREFACTIONS)) {
+//            MCoreFactionsHook mCoreFactionsHook = (MCoreFactionsHook)enabledHooks.get(HookType.MCOREFACTIONS);
+//            return mCoreFactionsHook.hasFaction(p);
+//        } else
+        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
             FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook)enabledHooks.get(HookType.FACTIONSUUID);
             return factionsUUIDHook.hasFaction(p);
         } else {
@@ -78,10 +81,11 @@ public class HookUtils {
      * Check if a location is wilderness if the factions hook is enabled
      */
     public boolean isWilderness(Location loc) {
-        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.MCOREFACTIONS)) {
-            MCoreFactionsHook mCoreFactionsHook = (MCoreFactionsHook)enabledHooks.get(HookType.MCOREFACTIONS);
-            return mCoreFactionsHook.isWilderness(loc);
-        } else if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
+//        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.MCOREFACTIONS)) {
+//            MCoreFactionsHook mCoreFactionsHook = (MCoreFactionsHook)enabledHooks.get(HookType.MCOREFACTIONS);
+//            return mCoreFactionsHook.isWilderness(loc);
+//        } else
+        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
             FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook)enabledHooks.get(HookType.FACTIONSUUID);
             return factionsUUIDHook.isWilderness(loc);
         } else {
@@ -94,10 +98,11 @@ public class HookUtils {
      */
     public boolean compareLocToPlayer(Location loc, Player p) {
         boolean canBuild = true;
-        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.MCOREFACTIONS)) {
-            MCoreFactionsHook mCoreFactionsHook = (MCoreFactionsHook)enabledHooks.get(HookType.MCOREFACTIONS);
-            if (!mCoreFactionsHook.compareLocPlayerFaction(loc, p)) canBuild = false;
-        } else if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
+//        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.MCOREFACTIONS)) {
+//            MCoreFactionsHook mCoreFactionsHook = (MCoreFactionsHook)enabledHooks.get(HookType.MCOREFACTIONS);
+//            if (!mCoreFactionsHook.compareLocPlayerFaction(loc, p)) canBuild = false;
+//        } else
+        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
             FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook)enabledHooks.get(HookType.FACTIONSUUID);
             if (!factionsUUIDHook.compareLocPlayerFaction(loc, p)) canBuild = false;
         }
@@ -116,10 +121,11 @@ public class HookUtils {
      * Check if a player has the minimum role to place chunkbusters if the factions hook is enabled
      */
     public boolean checkRole(Player p) {
-        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.MCOREFACTIONS)) {
-            MCoreFactionsHook mCoreFactionsHook = (MCoreFactionsHook)enabledHooks.get(HookType.MCOREFACTIONS);
-            return mCoreFactionsHook.checkRole(p, main.getConfigValues().getMinimumRole());
-        } else if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID_ROLE)) {
+//        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.MCOREFACTIONS)) {
+//            MCoreFactionsHook mCoreFactionsHook = (MCoreFactionsHook)enabledHooks.get(HookType.MCOREFACTIONS);
+//            return mCoreFactionsHook.checkRole(p, main.getConfigValues().getMinimumRole());
+//        } else
+        if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID_ROLE)) {
             IFactionsUUIDHook factionsUUIDHook = (IFactionsUUIDHook)enabledHooks.get(HookType.FACTIONSUUID_ROLE);
             return factionsUUIDHook.checkRole(p, main.getConfigValues().getMinimumRole());
         } else {

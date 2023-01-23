@@ -22,6 +22,7 @@
 .idea/**/dbnavigator.xml
 
 # Gradle
+.idea/
 .idea/**/gradle.xml
 .idea/**/libraries
 
@@ -32,6 +33,8 @@
 # .idea/modules.xml
 # .idea/*.iml
 # .idea/modules
+dependency-reduced-pom.xml
+target/
 
 # CMake
 cmake-build-*/
