@@ -27,7 +27,7 @@ public class RemovalQueue extends BukkitRunnable {
                 Block b = blocks.getFirst();
                 if (!b.getType().equals(Material.AIR)) {
                     main.getHookUtils().logBlock(p, b.getLocation(), b.getType(), b.getData());
-                    b.setType(Material.AIR);
+                    b.setType(Material.AIR, false);
                 } else {
                     count--;
                 }
