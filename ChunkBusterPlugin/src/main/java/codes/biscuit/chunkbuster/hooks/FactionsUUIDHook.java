@@ -2,7 +2,12 @@ package codes.biscuit.chunkbuster.hooks;
 
 
 import codes.biscuit.chunkbuster.ChunkBuster;
-import com.massivecraft.factions.*;
+import com.massivecraft.factions.Board;
+import com.massivecraft.factions.FLocation;
+import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.perms.FPerm;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -29,8 +34,9 @@ class FactionsUUIDHook {
     }
 
     boolean compareLocPlayerFaction(Location loc, Player p) {
-        Faction locFaction = Board.getInstance().getFactionAt(new FLocation(loc));
-        Faction pFaction = FPlayers.getInstance().getByPlayer(p).getFaction();
-        return locFaction.getId().equals(pFaction.getId()) || (locFaction.isWilderness() && main.getConfigValues().canPlaceInWilderness());
+        FLocation fLocation = new FLocation(loc);
+        Faction locFaction = Board.getInstance().getFactionAt(fLocation);
+        FPlayer fPlayer = FPlayers.getInstance().getByPlayer(p);
+        return FPerm.getPermBuildChunkBuster().has(fPlayer, fLocation, true) || (locFaction.isWilderness() && main.getConfigValues().canPlaceInWilderness());
     }
 }
