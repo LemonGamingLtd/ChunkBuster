@@ -13,6 +13,10 @@
 
     <repositories>
         <repository>
+            <id>lemongaming-repo</id>
+            <url>https://repo.lemongaming.ltd/repository/maven-public/</url>
+        </repository>
+        <repository>
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
@@ -63,6 +67,12 @@
             <groupId>ltd.lemongaming.massivecraft</groupId>
             <artifactId>Factions</artifactId>
             <version>1.6.9.5-U0.8.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ltd.lemongaming.massivecore</groupId>
+            <artifactId>MassiveCore</artifactId>
+            <version>3.4.13</version>
             <scope>provided</scope>
         </dependency>
 <!--        <dependency>-->

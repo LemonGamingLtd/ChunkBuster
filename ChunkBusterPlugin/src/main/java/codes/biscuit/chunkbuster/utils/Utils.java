@@ -94,8 +94,8 @@ public class Utils {
             int upperBound = ((chunkBusterArea-1)/2)+1;
             int lowerBound = (chunkBusterArea-1)/-2;
             for (int y = world.getMinHeight(); y <= world.getMaxHeight(); y++) {
-                for (int chunkX = lowerBound; chunkX <= upperBound; chunkX++) { // Loop through the area
-                    for (int chunkZ = lowerBound; chunkZ <= upperBound; chunkZ++) { // Get the chunk
+                for (int chunkX = lowerBound; chunkX < upperBound; chunkX++) { // Loop through the area
+                    for (int chunkZ = lowerBound; chunkZ < upperBound; chunkZ++) { // Get the chunk
                         Chunk chunk = world.getChunkAt(chunkBusterLocation.getChunk().getX() + chunkX, chunkBusterLocation.getChunk().getZ() + chunkZ);
                         Location chunkCheckLoc = chunk.getBlock(7, 60, 7).getLocation(); // Check the chunk
                         if (main.getHookUtils().compareLocToPlayer(chunkCheckLoc, p)) {
