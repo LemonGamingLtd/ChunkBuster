@@ -3,6 +3,7 @@ version: ${version}
 api-version: 1.13
 name: ChunkBuster
 author: Biscut
+depend: [LGCore]
 softdepend: [MassiveCore, Factions, WorldGuard, CoreProtect, Towny, WorldEdit]
 
 commit-hash: ${git.commit.id.describe-short}
