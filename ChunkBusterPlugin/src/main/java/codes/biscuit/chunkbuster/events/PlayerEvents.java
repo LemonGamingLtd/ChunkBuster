@@ -1,12 +1,10 @@
 package codes.biscuit.chunkbuster.events;
 
 import codes.biscuit.chunkbuster.ChunkBuster;
-import codes.biscuit.chunkbuster.ChunkBusterCooldown;
 import codes.biscuit.chunkbuster.timers.MessageTimer;
 import codes.biscuit.chunkbuster.timers.SoundTimer;
 import codes.biscuit.chunkbuster.utils.ConfigValues;
 import codes.biscuit.chunkbuster.utils.Utils;
-import ltd.lemongaming.lgcore.platform.cooldown.CooldownFunctions;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -193,18 +191,6 @@ public class PlayerEvents implements Listener {
                                         new SoundTimer(main, p, (int)((double)seconds / main.getConfigValues().getWarmupSoundInterval())).runTaskTimer(main, 0L, 20L * main.getConfigValues().getWarmupSoundInterval());
                                     }
                                     Bukkit.getScheduler().runTaskLater(main, () -> {
-                                        if (!CooldownFunctions.cooldown(p.getUniqueId(), ChunkBusterCooldown.PLACE_COOLDOWN)) {
-                                            if (main.getConfigValues().clearingSoundEnabled()) {
-                                                p.playSound(p.getLocation(), main.getConfigValues().getClearingSoundString(), main.getConfigValues().getClearingSoundVolume(), main.getConfigValues().getClearingSoundPitch());
-                                            }
-                                            main.getUtils().clearChunks(chunkBusterDiameter, chunkBusterLocation, p);
-                                            if (main.getConfigValues().getNoFallMillis() > 0) {
-                                                noFallDamage.put(p, System.currentTimeMillis() + main.getConfigValues().getNoFallMillis());
-                                            }
-                                        }
-                                    }, 20L * seconds);
-                                } else {
-                                    if (!CooldownFunctions.cooldown(p.getUniqueId(), ChunkBusterCooldown.PLACE_COOLDOWN)) {
                                         if (main.getConfigValues().clearingSoundEnabled()) {
                                             p.playSound(p.getLocation(), main.getConfigValues().getClearingSoundString(), main.getConfigValues().getClearingSoundVolume(), main.getConfigValues().getClearingSoundPitch());
                                         }
@@ -212,6 +198,14 @@ public class PlayerEvents implements Listener {
                                         if (main.getConfigValues().getNoFallMillis() > 0) {
                                             noFallDamage.put(p, System.currentTimeMillis() + main.getConfigValues().getNoFallMillis());
                                         }
+                                    }, 20L * seconds);
+                                } else {
+                                    if (main.getConfigValues().clearingSoundEnabled()) {
+                                        p.playSound(p.getLocation(), main.getConfigValues().getClearingSoundString(), main.getConfigValues().getClearingSoundVolume(), main.getConfigValues().getClearingSoundPitch());
+                                    }
+                                    main.getUtils().clearChunks(chunkBusterDiameter, chunkBusterLocation, p);
+                                    if (main.getConfigValues().getNoFallMillis() > 0) {
+                                        noFallDamage.put(p, System.currentTimeMillis() + main.getConfigValues().getNoFallMillis());
                                     }
                                 }
                             } else if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().getDisplayName().contains(main.getConfigValues().getCancelName())) {
