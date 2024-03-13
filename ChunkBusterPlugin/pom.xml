@@ -99,6 +99,12 @@
             <version>WG_7</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <artifactId>FAWE</artifactId>
+            <groupId>codes.biscuit</groupId>
+            <version>FAWE</version>
+            <scope>compile</scope>
+        </dependency>
 <!--        <dependency>-->
 <!--            <artifactId>UUID_NEW</artifactId>-->
 <!--            <groupId>codes.biscuit</groupId>-->

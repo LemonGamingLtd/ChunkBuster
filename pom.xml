@@ -12,6 +12,7 @@
         <module>WG_7</module>
         <module>ChunkBusterPlugin</module>
         <module>Abstraction</module>
+        <module>FAWE</module>
     </modules>
     <name>ChunkBusterParent</name>
 

@@ -1,10 +1,12 @@
 package codes.biscuit.chunkbuster.hooks;
 
 import codes.biscuit.chunkbuster.ChunkBuster;
+import codes.biscuit.chunkbuster.timers.RemovalQueue;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -14,6 +16,7 @@ public class HookUtils {
     private Map<HookType, Object> enabledHooks = new EnumMap<>(HookType.class);
     private ChunkBuster main;
 
+    private ChunkClearQueueProvider chunkClearQueueProvider;
 
     /**
      * This will automatically create all the hooks and add all the enabled hooks
@@ -59,6 +62,12 @@ public class HookUtils {
             main.getLogger().info("Hooked into CoreProtect");
             enabledHooks.put(HookType.COREPROTECT, new CoreProtectHook());
         }
+        if (pm.isPluginEnabled("FastAsyncWorldEdit")) {
+            main.getLogger().info("Hooked into FastAsyncWorldEdit");
+            chunkClearQueueProvider = new FastAsyncWorldEditHook();
+        } else {
+            chunkClearQueueProvider = new RemovalQueue.DefaultChunkClearQueueProvider();
+        }
     }
 
     /**
@@ -70,7 +79,7 @@ public class HookUtils {
 //            return mCoreFactionsHook.hasFaction(p);
 //        } else
         if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
-            FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook)enabledHooks.get(HookType.FACTIONSUUID);
+            FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook) enabledHooks.get(HookType.FACTIONSUUID);
             return factionsUUIDHook.hasFaction(p);
         } else {
             return true;
@@ -86,7 +95,7 @@ public class HookUtils {
 //            return mCoreFactionsHook.isWilderness(loc);
 //        } else
         if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
-            FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook)enabledHooks.get(HookType.FACTIONSUUID);
+            FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook) enabledHooks.get(HookType.FACTIONSUUID);
             return factionsUUIDHook.isWilderness(loc);
         } else {
             return false;
@@ -103,15 +112,15 @@ public class HookUtils {
 //            if (!mCoreFactionsHook.compareLocPlayerFaction(loc, p)) canBuild = false;
 //        } else
         if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID)) {
-            FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook)enabledHooks.get(HookType.FACTIONSUUID);
+            FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook) enabledHooks.get(HookType.FACTIONSUUID);
             if (!factionsUUIDHook.compareLocPlayerFaction(loc, p)) canBuild = false;
         }
         if (main.getConfigValues().worldguardHookEnabled() && enabledHooks.containsKey(HookType.WORLDGUARD)) {
-            IWorldGuardHook worldGuardHook = (IWorldGuardHook)enabledHooks.get(HookType.WORLDGUARD);
+            IWorldGuardHook worldGuardHook = (IWorldGuardHook) enabledHooks.get(HookType.WORLDGUARD);
             if (!worldGuardHook.checkLocationBreakFlag(loc.getChunk(), p)) canBuild = false;
         }
         if (main.getConfigValues().townyHookEnabled() && enabledHooks.containsKey(HookType.TOWNY)) {
-            TownyHook townyHook = (TownyHook)enabledHooks.get(HookType.TOWNY);
+            TownyHook townyHook = (TownyHook) enabledHooks.get(HookType.TOWNY);
             if (!townyHook.canBuild(loc.getChunk(), p)) canBuild = false;
         }
         return canBuild;
@@ -126,7 +135,7 @@ public class HookUtils {
 //            return mCoreFactionsHook.checkRole(p, main.getConfigValues().getMinimumRole());
 //        } else
         if (main.getConfigValues().factionsHookEnabled() && enabledHooks.containsKey(HookType.FACTIONSUUID_ROLE)) {
-            IFactionsUUIDHook factionsUUIDHook = (IFactionsUUIDHook)enabledHooks.get(HookType.FACTIONSUUID_ROLE);
+            IFactionsUUIDHook factionsUUIDHook = (IFactionsUUIDHook) enabledHooks.get(HookType.FACTIONSUUID_ROLE);
             return factionsUUIDHook.checkRole(p, main.getConfigValues().getMinimumRole());
         } else {
             return true;
@@ -138,9 +147,14 @@ public class HookUtils {
      */
     public void logBlock(Player p, Location loc, Material mat, byte damage) {
         if (main.getConfigValues().coreprotectHookEnabled() && enabledHooks.containsKey(HookType.COREPROTECT)) {
-            CoreProtectHook coreProtectHook = (CoreProtectHook)enabledHooks.get(HookType.COREPROTECT);
+            CoreProtectHook coreProtectHook = (CoreProtectHook) enabledHooks.get(HookType.COREPROTECT);
             coreProtectHook.logBlock(p.getName(), loc, mat, damage);
         }
+    }
+
+    @NotNull
+    public ChunkClearQueueProvider getChunkClearQueueProvider() {
+        return chunkClearQueueProvider;
     }
 
     public enum HookType {
@@ -149,7 +163,8 @@ public class HookUtils {
         FACTIONSUUID_ROLE,
         WORLDGUARD,
         COREPROTECT,
-        TOWNY
+        TOWNY,
+        FAWE,
     }
 
 }

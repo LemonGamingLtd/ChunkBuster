@@ -15,6 +15,12 @@ public class ChunkBuster extends JavaPlugin {
 
     public static NamespacedKey CHUNKBUSTER_RADIUS_KEY;
 
+    private static ChunkBuster instance;
+
+    public static ChunkBuster getInstance() {
+        return instance;
+    }
+
     private ConfigValues configValues = new ConfigValues(this);
     private Utils utils = new Utils(this);
     private HookUtils hookUtils;
@@ -22,16 +28,26 @@ public class ChunkBuster extends JavaPlugin {
     @Override
     public void onEnable() {
         CHUNKBUSTER_RADIUS_KEY = new NamespacedKey(this, "chunkbuster_radius");
+        instance = this;
 
         hookUtils = new HookUtils(this);
+
         saveDefaultConfig();
         utils.updateConfig(this);
+
         Bukkit.getPluginManager().registerEvents(new PlayerEvents(this), this);
         Bukkit.getPluginManager().registerEvents(new OtherEvents(this), this);
+
         ChunkBusterCommand chunkBusterCommand = new ChunkBusterCommand(this);
         getCommand("chunkbuster").setExecutor(chunkBusterCommand);
         getCommand("chunkbuster").setTabCompleter(chunkBusterCommand);
+
         new MetricsLite(this);
+    }
+
+    @Override
+    public void onDisable() {
+        instance = null;
     }
 
     public Utils getUtils() { return utils; }

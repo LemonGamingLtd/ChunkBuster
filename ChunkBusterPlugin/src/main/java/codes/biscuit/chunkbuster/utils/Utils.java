@@ -1,7 +1,6 @@
 package codes.biscuit.chunkbuster.utils;
 
 import codes.biscuit.chunkbuster.ChunkBuster;
-import codes.biscuit.chunkbuster.timers.RemovalQueue;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -19,12 +18,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static codes.biscuit.chunkbuster.ChunkBuster.CHUNKBUSTER_RADIUS_KEY;
@@ -55,7 +60,7 @@ public class Utils {
         if (rawItem.contains(":")) {
             rawSplit = rawItem.split(":");
         } else {
-            rawSplit = new String[] {rawItem};
+            rawSplit = new String[]{rawItem};
         }
         try {
             material = Material.valueOf(rawSplit[0]);
@@ -85,43 +90,24 @@ public class Utils {
     }
 
     public void clearChunks(int chunkBusterArea, Location chunkBusterLocation, Player p) {
-        Set<Material> ignoredBlocks = main.getConfigValues().getIgnoredBlocks();
         if (chunkBusterArea % 2 != 0) {
-            RemovalQueue removalQueue = new RemovalQueue(main, p);
             World world = chunkBusterLocation.getWorld();
-            WorldBorder border = world.getWorldBorder();
             // Variables for the area to loop through
-            int upperBound = ((chunkBusterArea-1)/2)+1;
-            int lowerBound = (chunkBusterArea-1)/-2;
-            for (int y = world.getMinHeight(); y <= world.getMaxHeight(); y++) {
-                for (int chunkX = lowerBound; chunkX < upperBound; chunkX++) { // Loop through the area
-                    for (int chunkZ = lowerBound; chunkZ < upperBound; chunkZ++) { // Get the chunk
-                        Chunk chunk = world.getChunkAt(chunkBusterLocation.getChunk().getX() + chunkX, chunkBusterLocation.getChunk().getZ() + chunkZ);
-                        Location chunkCheckLoc = chunk.getBlock(7, 60, 7).getLocation(); // Check the chunk
-                        if (main.getHookUtils().compareLocToPlayer(chunkCheckLoc, p)) {
-                            waterChunks.add(chunk);
-                            for (int x = 0; x < 16; x++) { // Clear the chunk
-                                for (int z = 0; z < 16; z++) {
-                                    Block b = chunk.getBlock(x, y, z);
-                                    if (b.getType() != Material.AIR && !ignoredBlocks.contains(b.getType())) {
-                                        if (!main.getConfigValues().worldborderHookEnabled() || insideBorder(b, border)) {
-                                            removalQueue.getBlocks().add(b);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            removalQueue.runTaskTimer(main, 1L, 1L);
+            int upperBound = ((chunkBusterArea - 1) / 2);
+            int lowerBound = (chunkBusterArea - 1) / -2;
+
+            final Chunk originalChunk = chunkBusterLocation.getChunk();
+            final Chunk minChunk = world.getChunkAt(originalChunk.getX() + lowerBound, originalChunk.getZ() + lowerBound);
+            final Chunk maxChunk = world.getChunkAt(originalChunk.getX() + upperBound, originalChunk.getZ() + upperBound);
+
+            main.getHookUtils().getChunkClearQueueProvider().clearChunks(p, minChunk, maxChunk);
             main.getUtils().sendMessage(p, ConfigValues.Message.CLEARING_CHUNKS);
         } else {
             p.sendMessage(color("&cInvalid chunk buster!"));
         }
     }
 
-    private boolean insideBorder(Block block, WorldBorder border) {
+    public boolean insideBorder(Block block, WorldBorder border) {
         return border.isInside(block.getLocation());
     }
 
@@ -182,12 +168,19 @@ public class Utils {
                             }
                         }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }.runTaskAsynchronously(main);
     }
 
-    public Set<Chunk> getWaterChunks() { return waterChunks; }
+    public void addWaterChunk(@NotNull Chunk chunk) {
+        this.waterChunks.add(chunk);
+    }
+
+    public Set<Chunk> getWaterChunks() {
+        return waterChunks;
+    }
 
     public ItemStack getChunkBusterItem(int giveAmount, int chunkArea) {
         ItemStack item = new ItemStack(main.getConfigValues().getChunkBusterMaterial(), giveAmount);

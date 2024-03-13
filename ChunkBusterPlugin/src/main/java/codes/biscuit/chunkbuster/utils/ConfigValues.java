@@ -172,7 +172,7 @@ public class ConfigValues {
         return (float)main.getConfig().getDouble("confirm-gui.cancel-pitch");
     }
 
-    Set<Material> getIgnoredBlocks() {
+    public Set<Material> getIgnoredBlocks() {
         List<String> rawMaterials = main.getConfig().getStringList("ignored-materials");
         Set<Material> materials = EnumSet.noneOf(Material.class);
         for (String rawMaterial : rawMaterials) {
@@ -229,7 +229,7 @@ public class ConfigValues {
         return main.getConfig().getBoolean("hooks.coreprotect");
     }
 
-    boolean worldborderHookEnabled() {
+    public boolean worldborderHookEnabled() {
         return main.getConfig().getBoolean("hooks.worldborder");
     }
 
