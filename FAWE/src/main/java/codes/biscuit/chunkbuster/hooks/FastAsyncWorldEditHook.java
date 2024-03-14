@@ -55,7 +55,7 @@ public class FastAsyncWorldEditHook implements ChunkClearQueueProvider {
      */
     public static class ChunkClearMask extends AbstractExtentMask {
 
-        private static final BlockType BEDROCK = Objects.requireNonNull(BlockTypes.AIR);
+        private static final BlockType BEDROCK = Objects.requireNonNull(BlockTypes.BEDROCK);
 
         /**
          * Construct a new mask.
