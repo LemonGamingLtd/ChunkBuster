@@ -82,7 +82,7 @@ public class FastAsyncWorldEditHook implements ChunkClearQueueProvider {
 
         @Override
         public Mask copy() {
-            return new BlockTypeMask(getExtent());
+            return new ChunkClearMask(getExtent());
         }
     }
 }
