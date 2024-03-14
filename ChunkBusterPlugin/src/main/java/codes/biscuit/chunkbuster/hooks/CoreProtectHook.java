@@ -18,4 +18,5 @@ class CoreProtectHook {
     void logBlock(String p, Location loc, Material mat, byte damage) {
         getCoreProtect().logRemoval(p + " (ChunkBuster)", loc, mat, damage);
     }
+
 }

@@ -9,7 +9,7 @@
     <artifactId>ChunkBusterPlugin</artifactId>
     <packaging>jar</packaging>
     <name>ChunkBusterPlugin</name>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
 
     <repositories>
         <repository>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>net.coreprotect</groupId>
             <artifactId>coreprotect</artifactId>
-            <version>21.3</version>
+            <version>22.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
