@@ -130,7 +130,7 @@
         <dependency>
             <groupId>dev.frankheijden.insights</groupId>
             <artifactId>Insights</artifactId>
-            <version>6.19.2</version>
+            <version>6.17.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -153,6 +153,8 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <!-- Disable annotation processing for ourselves. -->
+                    <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
             <plugin>

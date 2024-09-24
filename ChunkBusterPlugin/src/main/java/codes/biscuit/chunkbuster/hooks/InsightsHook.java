@@ -5,13 +5,12 @@ import dev.frankheijden.insights.api.concurrent.ScanOptions;
 import dev.frankheijden.insights.api.tasks.ScanTask;
 import dev.frankheijden.insights.api.util.LazyChunkPartRadiusIterator;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
 public class InsightsHook {
 
-    private static final ScanOptions SCAN_OPTIONS = ScanOptions.scanOnly();
+    private static final ScanOptions SCAN_OPTIONS = ScanOptions.all();
 
     private final InsightsPlugin plugin;
 
