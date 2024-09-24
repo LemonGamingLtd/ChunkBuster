@@ -241,6 +241,10 @@ public class ConfigValues {
         return main.getConfig().getBoolean("hooks.towny");
     }
 
+    public boolean insightsHookEnabled() {
+        return main.getConfig().getBoolean("hooks.insights", true);
+    }
+
     public int getNoFallMillis() {
         return main.getConfig().getInt("no-fall-seconds")*1000;
     }

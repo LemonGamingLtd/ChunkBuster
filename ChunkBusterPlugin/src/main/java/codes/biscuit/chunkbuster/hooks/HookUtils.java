@@ -2,6 +2,7 @@ package codes.biscuit.chunkbuster.hooks;
 
 import codes.biscuit.chunkbuster.ChunkBuster;
 import codes.biscuit.chunkbuster.timers.RemovalQueue;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -61,6 +62,10 @@ public class HookUtils {
         if (pm.getPlugin("CoreProtect") != null) {
             main.getLogger().info("Hooked into CoreProtect");
             enabledHooks.put(HookType.COREPROTECT, new CoreProtectHook());
+        }
+        if (pm.isPluginEnabled("Insights")) {
+            main.getLogger().info("Hooked into Insights");
+            enabledHooks.put(HookType.INSIGHTS, new InsightsHook());
         }
         if (pm.isPluginEnabled("FastAsyncWorldEdit")) {
             main.getLogger().info("Hooked into FastAsyncWorldEdit");
@@ -152,6 +157,16 @@ public class HookUtils {
         }
     }
 
+    /**
+     * Perform scan.
+     */
+    public void scan(@NotNull Chunk chunk, int radius) {
+        if (main.getConfigValues().insightsHookEnabled() && enabledHooks.containsKey(HookType.INSIGHTS)) {
+            InsightsHook insightsHook = (InsightsHook) enabledHooks.get(HookType.INSIGHTS);
+            insightsHook.scan(chunk, radius);
+        }
+    }
+
     @NotNull
     public ChunkClearQueueProvider getChunkClearQueueProvider() {
         return chunkClearQueueProvider;
@@ -164,7 +179,7 @@ public class HookUtils {
         WORLDGUARD,
         COREPROTECT,
         TOWNY,
-        FAWE,
+        INSIGHTS,
     }
 
 }

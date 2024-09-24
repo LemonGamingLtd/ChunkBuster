@@ -12,16 +12,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
+import java.util.function.Consumer;
 
 public class RemovalQueue extends BukkitRunnable {
 
-    private ChunkBuster main;
-    private LinkedList<Block> blocks = new LinkedList<>();
-    private Player p;
+    private final ChunkBuster main;
+    private final LinkedList<Block> blocks = new LinkedList<>();
+    private final Player p;
+    private final Consumer<Boolean> finish;
 
-    public RemovalQueue(ChunkBuster main, Player p) {
+    public RemovalQueue(ChunkBuster main, Player p, @NotNull Consumer<Boolean> finish) {
         this.main = main;
         this.p = p;
+        this.finish = finish;
     }
 
     @SuppressWarnings("deprecation")
@@ -42,6 +45,7 @@ public class RemovalQueue extends BukkitRunnable {
             }
         }
         if (blocks.isEmpty()) {
+            finish.accept(true);
             cancel();
         }
     }
@@ -55,8 +59,8 @@ public class RemovalQueue extends BukkitRunnable {
         private final ChunkBuster main = ChunkBuster.getInstance();
 
         @Override
-        public void clearChunks(@NotNull Player player, @NotNull Chunk minChunk, @NotNull Chunk maxChunk) {
-            RemovalQueue removalQueue = new RemovalQueue(main, player);
+        public void clearChunks(@NotNull Player player, @NotNull Chunk minChunk, @NotNull Chunk maxChunk, @NotNull Consumer<Boolean> finish) {
+            RemovalQueue removalQueue = new RemovalQueue(main, player, finish);
 
             final World world = minChunk.getWorld();
 

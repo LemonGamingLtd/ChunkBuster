@@ -18,13 +18,14 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class FastAsyncWorldEditHook implements ChunkClearQueueProvider {
 
     private static final BlockState AIR = Objects.requireNonNull(BlockTypes.AIR).getDefaultState();
 
     @Override
-    public void clearChunks(@NotNull Player player, @NotNull Chunk minChunk, @NotNull Chunk maxChunk) {
+    public void clearChunks(@NotNull Player player, @NotNull Chunk minChunk, @NotNull Chunk maxChunk, @NotNull Consumer<Boolean> finish) {
         final org.bukkit.World bukkitWorld = minChunk.getWorld();
         final World world = BukkitAdapter.adapt(bukkitWorld);
 
@@ -47,6 +48,8 @@ public class FastAsyncWorldEditHook implements ChunkClearQueueProvider {
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(world)) {
             final Mask mask = new ChunkClearMask(editSession);
             editSession.replaceBlocks(cuboidRegion, mask, AIR);
+        } finally {
+            finish.accept(true);
         }
     }
 

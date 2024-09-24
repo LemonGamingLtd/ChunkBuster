@@ -100,7 +100,7 @@ public class Utils {
             final Chunk minChunk = world.getChunkAt(originalChunk.getX() + lowerBound, originalChunk.getZ() + lowerBound);
             final Chunk maxChunk = world.getChunkAt(originalChunk.getX() + upperBound, originalChunk.getZ() + upperBound);
 
-            main.getHookUtils().getChunkClearQueueProvider().clearChunks(p, minChunk, maxChunk);
+            main.getHookUtils().getChunkClearQueueProvider().clearChunks(p, minChunk, maxChunk, __ -> main.getHookUtils().scan(originalChunk, chunkBusterArea));
             main.getUtils().sendMessage(p, ConfigValues.Message.CLEARING_CHUNKS);
         } else {
             p.sendMessage(color("&cInvalid chunk buster!"));

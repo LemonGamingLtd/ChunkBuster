@@ -36,6 +36,10 @@
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>fvdh</id>
+            <url>https://repo.fvdh.dev/releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -122,6 +126,12 @@
             <groupId>codes.biscuit</groupId>
             <version>Abstraction</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.frankheijden.insights</groupId>
+            <artifactId>Insights</artifactId>
+            <version>6.19.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

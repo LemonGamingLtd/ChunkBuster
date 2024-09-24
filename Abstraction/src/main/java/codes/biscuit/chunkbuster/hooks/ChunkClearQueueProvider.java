@@ -4,6 +4,8 @@ import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 public interface ChunkClearQueueProvider {
 
     /**
@@ -13,6 +15,6 @@ public interface ChunkClearQueueProvider {
      * @param minChunk Min chunk.
      * @param maxChunk Max chunk.
      */
-    void clearChunks(@NotNull Player player, @NotNull Chunk minChunk, @NotNull Chunk maxChunk);
+    void clearChunks(@NotNull Player player, @NotNull Chunk minChunk, @NotNull Chunk maxChunk, @NotNull Consumer<Boolean> finish);
 
 }
