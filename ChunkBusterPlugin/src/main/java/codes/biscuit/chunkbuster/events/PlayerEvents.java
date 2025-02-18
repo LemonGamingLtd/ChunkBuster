@@ -44,6 +44,9 @@ public class PlayerEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onChunkBusterPlace(BlockPlaceEvent e) {
         ItemStack item = e.getItemInHand();
+        if (item.getType().isAir() || !item.hasItemMeta()) {
+            return;
+        }
         PersistentDataContainer dataContainer = item.getItemMeta().getPersistentDataContainer();
         if (e.getItemInHand().getType().equals(main.getConfigValues().getChunkBusterMaterial()) && dataContainer.has(CHUNKBUSTER_RADIUS_KEY)) {
             e.setCancelled(true);
