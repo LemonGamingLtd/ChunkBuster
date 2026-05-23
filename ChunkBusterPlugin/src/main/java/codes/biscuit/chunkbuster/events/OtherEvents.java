@@ -16,17 +16,11 @@ public class OtherEvents implements Listener {
 
     @EventHandler
     public void onWaterFlow(BlockFromToEvent e) {
-        if (isLiquid(e.getBlock().getType())) {
+        Material material = e.getBlock().getType();
+        if (material == Material.WATER || material == Material.LAVA) {
             if (!main.getUtils().getWaterChunks().contains(e.getBlock().getChunk()) && main.getUtils().getWaterChunks().contains(e.getToBlock().getChunk())) {
                 e.setCancelled(true);
             }
         }
-    }
-
-    private boolean isLiquid(Material material) {
-        return material == Material.WATER
-                || material == Material.LAVA
-                || material.name().equals("STATIONARY_WATER")
-                || material.name().equals("STATIONARY_LAVA");
     }
 }
